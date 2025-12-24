@@ -7,7 +7,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:KEDE_APP/main.dart'; // Ganti 'kede_app' jika nama proyek Anda beda
+import 'package:kede_app/main.dart'; // Ganti 'kede_app' jika nama proyek Anda beda
 
 void main() {
   testWidgets('Counter increments smoke test', (WidgetTester tester) async {

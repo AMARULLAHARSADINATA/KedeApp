@@ -1,24 +1,13 @@
 // lib/main.dart
 import 'package:flutter/material.dart';
-import 'package:firebase_core/firebase_core.dart'; // 1. IMPORT WAJIB FIREBASE
-import 'firebase_options.dart'; // 2. IMPORT FILE KONFIGURASI (Auto-generated)
 import 'screens/onboarding_screen.dart';
 
-// Definisikan warna utama kita
+// ================= WARNA TEMA (TIDAK DIUBAH) =================
 const Color kPrimaryColor = Color(0xFF6ABF4B);
 const Color kTextColor = Color(0xFF202E2E);
 const Color kTextLightColor = Color(0xFF728080);
 
-// 3. UBAH MAIN MENJADI ASYNC
-void main() async {
-  // 4. PASTIKAN BINDING FLUTTER SIAP
-  WidgetsFlutterBinding.ensureInitialized();
-
-  // 5. INISIALISASI FIREBASE
-  await Firebase.initializeApp(
-    options: DefaultFirebaseOptions.currentPlatform,
-  );
-
+void main() {
   runApp(const MyApp());
 }
 
@@ -29,24 +18,25 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Kede Grocery App',
+      debugShowCheckedModeBanner: false,
       theme: ThemeData(
         scaffoldBackgroundColor: Colors.white,
         primaryColor: kPrimaryColor,
-        // Tema untuk font
+
+        // ================= TEXT THEME =================
         textTheme: const TextTheme(
-          // Style untuk Judul (cth: "Welcome to Kede!")
           headlineSmall: TextStyle(
             color: kTextColor,
             fontWeight: FontWeight.bold,
             fontSize: 28,
           ),
-          // Style untuk deskripsi (cth: "Lorem ipsum...")
           bodyMedium: TextStyle(
             color: kTextLightColor,
             fontSize: 16,
           ),
         ),
-        // Tema untuk Tombol Utama (Elevated)
+
+        // ================= ELEVATED BUTTON =================
         elevatedButtonTheme: ElevatedButtonThemeData(
           style: ElevatedButton.styleFrom(
             backgroundColor: kPrimaryColor,
@@ -61,7 +51,8 @@ class MyApp extends StatelessWidget {
             ),
           ),
         ),
-        // Tema untuk Tombol Kedua (Outlined)
+
+        // ================= OUTLINED BUTTON =================
         outlinedButtonTheme: OutlinedButtonThemeData(
           style: OutlinedButton.styleFrom(
             side: const BorderSide(color: kPrimaryColor, width: 2),
@@ -71,14 +62,15 @@ class MyApp extends StatelessWidget {
               borderRadius: BorderRadius.circular(16),
             ),
             textStyle: const TextStyle(
-              fontSize: 18, 
+              fontSize: 18,
               fontWeight: FontWeight.bold,
             ),
           ),
-        )
+        ),
       ),
-      home: const OnboardingScreen(), // Kembali ke OnboardingScreen
-      debugShowCheckedModeBanner: false,
+
+      // ================= ENTRY SCREEN =================
+      home: const OnboardingScreen(),
     );
   }
 }

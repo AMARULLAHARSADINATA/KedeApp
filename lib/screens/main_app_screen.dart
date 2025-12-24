@@ -1,11 +1,14 @@
-// lib/screens/main_app_screen.dart
 import 'package:flutter/material.dart';
-import '../main.dart'; // Untuk kPrimaryColor
+import '../main.dart';
+
+// === SCREEN UTAMA ===
 import 'home_screen.dart';
 import 'shopping_cart_screen.dart';
 import 'wishlist_screen.dart';
 import 'profile_screen.dart';
-import 'category_list_screen.dart'; // <-- 1. TAMBAHKAN IMPORT INI
+
+// === CRUD PRODUCT ===
+import 'product_list_screen.dart';
 
 class MainAppScreen extends StatefulWidget {
   final int? initialIndex;
@@ -19,13 +22,15 @@ class MainAppScreen extends StatefulWidget {
 class _MainAppScreenState extends State<MainAppScreen> {
   late int _selectedIndex;
 
-  // 2. UBAH DAFTAR '_pages' INI
+  // =======================
+  // DAFTAR HALAMAN (TAB)
+  // =======================
   static const List<Widget> _pages = <Widget>[
-    HomeScreen(), // Tab 0
-    CategoryListScreen(), // Tab 1 (Diubah dari Placeholder)
-    ShoppingCartScreen(), // Tab 2
-    WishlistScreen(), // Tab 3
-    ProfileScreen(), // Tab 4
+    HomeScreen(),            // 0 - Home
+    ProductListScreen(),     // 1 - PRODUCTS (CRUD)
+    ShoppingCartScreen(),    // 2 - Cart
+    WishlistScreen(),        // 3 - Wishlist
+    ProfileScreen(),         // 4 - Profile
   ];
 
   @override
@@ -43,47 +48,52 @@ class _MainAppScreenState extends State<MainAppScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: _pages.elementAt(_selectedIndex),
-      
+      body: _pages[_selectedIndex],
+
+      // =======================
+      // BOTTOM NAVIGATION BAR
+      // =======================
       bottomNavigationBar: BottomNavigationBar(
         type: BottomNavigationBarType.fixed,
-        
-        // 3. UBAH BAGIAN 'items' INI
-        items: const <BottomNavigationBarItem>[
+        currentIndex: _selectedIndex,
+        selectedItemColor: kPrimaryColor,
+        unselectedItemColor: Colors.grey,
+        showSelectedLabels: false,
+        showUnselectedLabels: false,
+        onTap: _onItemTapped,
+
+        items: const [
           BottomNavigationBarItem(
             icon: Icon(Icons.home_outlined),
             activeIcon: Icon(Icons.home),
             label: 'Home',
           ),
-          // --- BAGIAN YANG DIUBAH ---
+
+          // ===== CRUD PRODUCT TAB =====
           BottomNavigationBarItem(
-            icon: Icon(Icons.compare_arrows_outlined), // Ikon diubah
-            activeIcon: Icon(Icons.grid_view_rounded), // Ikon diubah
-            label: 'Category', // Label diubah
+            icon: Icon(Icons.inventory_2_outlined),
+            activeIcon: Icon(Icons.inventory_2),
+            label: 'Products',
           ),
-          // --- BATAS PERUBAHAN ---
+
           BottomNavigationBarItem(
             icon: Icon(Icons.shopping_cart_outlined),
             activeIcon: Icon(Icons.shopping_cart),
             label: 'Cart',
           ),
+
           BottomNavigationBarItem(
             icon: Icon(Icons.favorite_border),
             activeIcon: Icon(Icons.favorite),
             label: 'Wishlist',
           ),
+
           BottomNavigationBarItem(
             icon: Icon(Icons.person_outline),
             activeIcon: Icon(Icons.person),
             label: 'Profile',
           ),
         ],
-        currentIndex: _selectedIndex,
-        selectedItemColor: kPrimaryColor,
-        unselectedItemColor: Colors.grey,
-        onTap: _onItemTapped,
-        showSelectedLabels: false,
-        showUnselectedLabels: false,
       ),
     );
   }

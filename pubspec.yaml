@@ -1,4 +1,4 @@
-name: KEDE_APP
+name: kede_app
 description: A new Flutter project.
 publish_to: 'none'
 version: 1.0.0+1
@@ -9,14 +9,17 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
+      
 
   # Paket yang kita tambahkan
+  http: ^1.2.0
+  shared_preferences: ^2.2.3
   flutter_svg: ^2.0.10+1
   smooth_page_indicator: ^1.1.0
   cupertino_icons: ^1.0.2
-  firebase_core: ^4.2.1
-  firebase_auth: ^6.1.2
-  cloud_firestore: ^6.1.0
+  # firebase_core: ^4.2.1
+  # firebase_auth: ^6.1.2
+  # cloud_firestore: ^6.1.0
 
 dev_dependencies:
   flutter_test:

@@ -1,7 +1,7 @@
 // lib/screens/register_screen.dart
 
 import 'package:flutter/material.dart';
-import 'package:firebase_auth/firebase_auth.dart';
+import '../services/api_service.dart';
 
 // Definisikan warna tema (agar konsisten dengan main.dart)
 const Color kPrimaryColor = Color(0xFF6ABF4B);
@@ -17,12 +17,12 @@ class _RegisterScreenState extends State<RegisterScreen> {
   // Controller untuk mengambil teks inputan
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
-  final TextEditingController _nameController = TextEditingController(); // Tambahan untuk Nama
+  final TextEditingController _nameController = TextEditingController();
 
-  bool _isLoading = false; // Status loading saat tombol ditekan
-  bool _isPasswordVisible = false; // Untuk mata (show/hide password)
+  bool _isLoading = false;
+  bool _isPasswordVisible = false;
 
-  // --- FUNGSI UTAMA REGISTRASI FIREBASE ---
+  // --- FUNGSI REGISTRASI (LARAVEL API) ---
   Future<void> _registerUser() async {
     // 1. Validasi Input Kosong
     if (_emailController.text.isEmpty || _passwordController.text.isEmpty) {
@@ -32,64 +32,40 @@ class _RegisterScreenState extends State<RegisterScreen> {
       return;
     }
 
-    setState(() {
-      _isLoading = true; // Mulai loading
-    });
+    setState(() => _isLoading = true);
 
-    try {
-      // 2. Kirim data ke Firebase Auth
-      UserCredential userCredential = 
-          await FirebaseAuth.instance.createUserWithEmailAndPassword(
-        email: _emailController.text.trim(),
-        password: _passwordController.text.trim(),
+    // 2. Kirim ke Laravel API
+    final response = await ApiService.register(
+      _nameController.text.trim(),
+      _emailController.text.trim(),
+      _passwordController.text.trim(),
+    );
+
+    if (!mounted) return;
+
+    setState(() => _isLoading = false);
+
+    // 3. Handle Response
+    if (response['token'] != null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Registrasi Berhasil! Silakan Login.'),
+          backgroundColor: kPrimaryColor,
+        ),
       );
-
-      // (Opsional) Update Nama Profil User di Firebase
-      await userCredential.user?.updateDisplayName(_nameController.text.trim());
-
-      // 3. Jika Sukses
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Registrasi Berhasil! Silakan Login.'),
-            backgroundColor: kPrimaryColor,
-          ),
-        );
-        Navigator.pop(context); // Kembali ke layar sebelumnya (Login)
-      }
-
-    } on FirebaseAuthException catch (e) {
-      // 4. Jika Gagal (Error Handling)
-      String message = "Terjadi kesalahan.";
-      if (e.code == 'weak-password') {
-        message = "Password terlalu lemah (min. 6 karakter).";
-      } else if (e.code == 'email-already-in-use') {
-        message = "Email ini sudah terdaftar. Gunakan email lain.";
-      } else if (e.code == 'invalid-email') {
-        message = "Format email salah.";
-      }
-
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(message),
-            backgroundColor: Colors.redAccent,
-          ),
-        );
-      }
-    } finally {
-      // Selesai loading
-      if (mounted) {
-        setState(() {
-          _isLoading = false;
-        });
-      }
+      Navigator.pop(context);
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(response['message'] ?? 'Registrasi gagal'),
+          backgroundColor: Colors.redAccent,
+        ),
+      );
     }
   }
 
   @override
   void dispose() {
-    // Bersihkan controller agar memori aman
     _emailController.dispose();
     _passwordController.dispose();
     _nameController.dispose();
@@ -107,7 +83,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
         ),
         backgroundColor: Colors.white,
         elevation: 0,
-        iconTheme: const IconThemeData(color: Colors.black87), // Panah back hitam
+        iconTheme: const IconThemeData(color: Colors.black87),
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(24.0),
@@ -129,7 +105,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
             ),
             const SizedBox(height: 32),
 
-            // INPUT NAMA (Opsional tapi bagus untuk profil)
+            // INPUT NAMA
             TextField(
               controller: _nameController,
               decoration: InputDecoration(
@@ -159,13 +135,15 @@ class _RegisterScreenState extends State<RegisterScreen> {
             // INPUT PASSWORD
             TextField(
               controller: _passwordController,
-              obscureText: !_isPasswordVisible, // Bisa diintip
+              obscureText: !_isPasswordVisible,
               decoration: InputDecoration(
                 labelText: "Password",
                 prefixIcon: const Icon(Icons.lock_outline),
                 suffixIcon: IconButton(
                   icon: Icon(
-                    _isPasswordVisible ? Icons.visibility : Icons.visibility_off,
+                    _isPasswordVisible
+                        ? Icons.visibility
+                        : Icons.visibility_off,
                   ),
                   onPressed: () {
                     setState(() {
@@ -185,7 +163,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
               width: double.infinity,
               height: 56,
               child: ElevatedButton(
-                onPressed: _isLoading ? null : _registerUser, // Disable jika loading
+                onPressed: _isLoading ? null : _registerUser,
                 style: ElevatedButton.styleFrom(
                   backgroundColor: kPrimaryColor,
                   foregroundColor: Colors.white,

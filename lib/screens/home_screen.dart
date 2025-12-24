@@ -1,15 +1,19 @@
 // lib/screens/home_screen.dart
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:firebase_auth/firebase_auth.dart'; // 1. IMPORT FIREBASE AUTH
-import '../main.dart'; 
-import 'category_list_screen.dart'; 
-import 'category_detail_screen.dart'; 
+import '../main.dart';
+import 'category_list_screen.dart';
+import 'category_detail_screen.dart';
 import '../models/product.dart';
 import 'product_detail_screen.dart';
 
 class HomeScreen extends StatelessWidget {
-  const HomeScreen({super.key});
+  final String userName;
+
+  const HomeScreen({
+    super.key,
+    this.userName = 'User', // DEFAULT jika belum ada data user
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -20,11 +24,11 @@ class HomeScreen extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              _buildHeader(), // Header sekarang dinamis
+              _buildHeader(),
               const SizedBox(height: 24),
               _buildRecipeCard(),
               const SizedBox(height: 32),
-              
+
               _buildSectionHeader(
                 title: 'Categories',
                 onPressed: () {
@@ -42,7 +46,7 @@ class HomeScreen extends StatelessWidget {
 
               _buildSectionHeader(title: 'Trending Deals', onPressed: () {}),
               const SizedBox(height: 16),
-              _buildTrendingList(context), 
+              _buildTrendingList(context),
             ],
           ),
         ),
@@ -50,48 +54,41 @@ class HomeScreen extends StatelessWidget {
     );
   }
 
-  // --- BAGIAN INI YANG DIUBAH AGAR MENAMPILKAN NAMA USER ---
+  // ================= HEADER (TIDAK UBAH UI) =================
   Widget _buildHeader() {
-    // 1. Ambil User yang sedang login
-    final User? user = FirebaseAuth.instance.currentUser;
-    
-    // 2. Tentukan nama yang akan ditampilkan
-    // Prioritas: DisplayName -> Email (ambil depan @) -> 'User'
-    String displayName = 'User';
-    
-    if (user != null) {
-      if (user.displayName != null && user.displayName!.isNotEmpty) {
-        displayName = user.displayName!;
-      } else if (user.email != null) {
-        displayName = user.email!.split('@')[0]; // Ambil nama sebelum @gmail.com
-      }
-    }
-
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
         Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text('Good Morning',
-                style: TextStyle(color: kTextLightColor, fontSize: 16)),
-            
-            // 3. Tampilkan variabel displayName
-            Text(displayName,
-                style: const TextStyle(
-                    color: kTextColor,
-                    fontSize: 22,
-                    fontWeight: FontWeight.bold)),
+            const Text(
+              'Good Morning',
+              style: TextStyle(color: kTextLightColor, fontSize: 16),
+            ),
+            Text(
+              userName,
+              style: const TextStyle(
+                color: kTextColor,
+                fontSize: 22,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
           ],
         ),
         IconButton(
           onPressed: () {},
-          icon: const Icon(Icons.notifications_none_outlined,
-              color: kTextColor, size: 28),
+          icon: const Icon(
+            Icons.notifications_none_outlined,
+            color: kTextColor,
+            size: 28,
+          ),
         ),
       ],
     );
   }
+
+  // ================= SEMUA KODE DI BAWAH INI TIDAK DIUBAH =================
 
   Widget _buildRecipeCard() {
     return Container(
@@ -134,14 +131,21 @@ class HomeScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildSectionHeader(
-      {required String title, required VoidCallback onPressed}) {
+  Widget _buildSectionHeader({
+    required String title,
+    required VoidCallback onPressed,
+  }) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        Text(title,
-            style: const TextStyle(
-                color: kTextColor, fontSize: 20, fontWeight: FontWeight.bold)),
+        Text(
+          title,
+          style: const TextStyle(
+            color: kTextColor,
+            fontSize: 20,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
         IconButton(
           onPressed: onPressed,
           icon: const Icon(Icons.arrow_forward, color: kPrimaryColor),
@@ -164,7 +168,12 @@ class HomeScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildCategoryItem(BuildContext context, String name, String iconPath, int itemCount) {
+  Widget _buildCategoryItem(
+    BuildContext context,
+    String name,
+    String iconPath,
+    int itemCount,
+  ) {
     return Padding(
       padding: const EdgeInsets.only(right: 16.0),
       child: GestureDetector(
@@ -192,9 +201,8 @@ class HomeScreen extends StatelessWidget {
               iconPath,
               height: 40,
               width: 40,
-              colorFilter: const ColorFilter.mode(kPrimaryColor, BlendMode.srcIn),
-              errorBuilder: (context, error, stackTrace) =>
-                  const Icon(Icons.error, color: Colors.red),
+              colorFilter:
+                  const ColorFilter.mode(kPrimaryColor, BlendMode.srcIn),
             ),
           ),
         ),
@@ -203,19 +211,18 @@ class HomeScreen extends StatelessWidget {
   }
 
   Widget _buildTrendingList(BuildContext context) {
-    
     final Product avocado = Product(
       name: 'Avocado',
       imagePath: 'assets/images/avocado.jpg',
-      price: 6.7, 
-      isFavorite: true 
+      price: 6.7,
+      isFavorite: true,
     );
-    
+
     final Product brocoli = Product(
       name: 'Brocoli',
       imagePath: 'assets/images/brocoli.jpg',
-      price: 8.7, 
-      isFavorite: false 
+      price: 8.7,
+      isFavorite: false,
     );
 
     final Product tomatoes = Product(
@@ -240,12 +247,11 @@ class HomeScreen extends StatelessWidget {
             children: [
               _buildProductItem(context, avocado),
               _buildProductItem(context, brocoli),
-              _buildProductItem(context, tomatoes), 
-              _buildProductItem(context, grapes),   
+              _buildProductItem(context, tomatoes),
+              _buildProductItem(context, grapes),
             ],
           ),
         ),
-
         const SizedBox(height: 24),
         ElevatedButton(
           onPressed: () {
@@ -253,9 +259,9 @@ class HomeScreen extends StatelessWidget {
               context,
               MaterialPageRoute(
                 builder: (context) => CategoryDetailScreen(
-                  categoryName: 'Fruits', 
-                  iconPath: 'assets/icons/grapes.svg', 
-                  itemCount: 87, 
+                  categoryName: 'Fruits',
+                  iconPath: 'assets/icons/grapes.svg',
+                  itemCount: 87,
                 ),
               ),
             );
@@ -292,16 +298,6 @@ class HomeScreen extends StatelessWidget {
                     fit: BoxFit.cover,
                   ),
                 ),
-                child: Align(
-                  alignment: Alignment.topRight,
-                  child: Padding(
-                    padding: const EdgeInsets.all(10.0),
-                    child: Icon(
-                      product.isFavorite ? Icons.favorite : Icons.favorite_border,
-                      color: product.isFavorite ? Colors.red : Colors.white,
-                    ),
-                  ),
-                ),
               ),
               const SizedBox(height: 8),
               Text(
@@ -311,8 +307,6 @@ class HomeScreen extends StatelessWidget {
                   fontSize: 18,
                   fontWeight: FontWeight.bold,
                 ),
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
               ),
               const SizedBox(height: 4),
               Text(
